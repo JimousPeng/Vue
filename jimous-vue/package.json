@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "core-js": "^3.6.5",
-    "jimous-vue-components": "^0.0.2",
+    "jimous-vue-components": "^0.0.4",
     "vue": "^2.6.11"
   },
   "devDependencies": {

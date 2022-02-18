@@ -5690,10 +5690,10 @@ jest-worker@^27.4.5:
     merge-stream "^2.0.0"
     supports-color "^8.0.0"
 
-jimous-vue-components@^0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/jimous-vue-components/-/jimous-vue-components-0.0.2.tgz#c046f8971f70926b6fc316da14859f3ae76b4cf7"
-  integrity sha512-hrNMb2bwytEaY42Ga1eUjNkVjxu9aFx/PWGyufEh56x6b2JJmGD4akHeOV2/72SjDx8LFt/4tXj752Yb4pwXsw==
+jimous-vue-components@^0.0.4:
+  version "0.0.4"
+  resolved "https://registry.yarnpkg.com/jimous-vue-components/-/jimous-vue-components-0.0.4.tgz#fb0099716c7d6c6e0c570d8d5e739315b27f8de0"
+  integrity sha512-v7wXPHvGXUnrTIHkHI7oPtpuZ2hiKVYFxZOGd9hw9ASI+CeEt1zXliQlVQdMid+X963CbStMREjgskMBcoF6kg==
   dependencies:
     "@babel/core" "^7.17.2"
     "@babel/plugin-transform-runtime" "^7.17.0"
