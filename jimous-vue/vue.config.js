@@ -2,7 +2,7 @@
  * @Date: 2022-03-04 11:29:17
  * @LastEditors: jimouspeng
  * @Description: vue配置文件
- * @LastEditTime: 2022-03-04 14:22:57
+ * @LastEditTime: 2022-03-04 16:31:30
  * @FilePath: \vue\jimous-vue\vue.config.js
  */
 
@@ -27,7 +27,7 @@ module.exports = {
         resolve: {
             alias: {
                 // vue$, 正则，内部为正则表达式  vue结尾的
-                vue$: 'vue/dist/vue.js', 
+                vue$: 'vue/dist/vue.js',
             },
         },
     },

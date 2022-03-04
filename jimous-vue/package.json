@@ -10,6 +10,8 @@
   "dependencies": {
     "core-js": "^3.6.5",
     "jimous-vue-components": "^0.0.4",
+    "sass": "^1.49.9",
+    "sass-loader": "^10.1.0",
     "vue": "^2.6.11"
   },
   "devDependencies": {
