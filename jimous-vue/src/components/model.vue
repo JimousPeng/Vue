@@ -2,7 +2,7 @@
  * @Date: 2022-02-25 10:15:15
  * @LastEditors: jimouspeng
  * @Description: 描述文件内容
- * @LastEditTime: 2022-03-04 17:33:14
+ * @LastEditTime: 2022-03-04 17:41:59
  * @FilePath: \vue\jimous-vue\src\components\model.vue
 -->
 <template>
@@ -10,7 +10,8 @@
         <!-- {{ name }} -->
         <!-- <span>{{ hh }}</span> -->
         <p>{{ userInfo[0].name || 'coco' }}</p>
-        <p>{{ userInfo[0].country }}</p>
+        <p v-focus>{{ userInfo[0].country }}</p>
+        <input type="text" v-focus />
         <!-- <p>{{ userInfo.country || 'china' }}</p> -->
         <!-- <p>{{ country }}</p> -->
         <button @click="eventClick">点击</button>
