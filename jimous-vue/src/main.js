@@ -2,14 +2,14 @@
  * @Date: 2022-02-11 10:25:59
  * @LastEditors: jimouspeng
  * @Description: 描述文件内容
- * @LastEditTime: 2022-03-04 17:44:09
+ * @LastEditTime: 2022-03-04 17:47:05
  * @FilePath: \vue\jimous-vue\src\main.js
  */
 import Vue from 'vue'
 import App from './App.vue'
 import { toast } from './components/toast.js'
 
-console.log(toast)
+// console.log(toast)
 
 import ShowModel from 'jimous-vue-components/lib/show-model/index'
 
@@ -19,6 +19,7 @@ Vue.config.productionTip = false
 
 Vue.prototype.$toast = toast
 
+/** 注册或获取全局指令 */
 Vue.directive('focus', {
     // 只调用一次，指令第一次绑定到元素时调用
     bind(el) {

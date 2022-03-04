@@ -2,7 +2,7 @@
  * @Date: 2022-02-25 10:15:15
  * @LastEditors: jimouspeng
  * @Description: 描述文件内容
- * @LastEditTime: 2022-03-04 17:41:59
+ * @LastEditTime: 2022-03-04 17:46:56
  * @FilePath: \vue\jimous-vue\src\components\model.vue
 -->
 <template>
@@ -26,6 +26,15 @@ export default {
             default: 'jimous',
         },
     },
+    /** 注册组件内局部指令 */
+    directives: {
+        focus: {
+            inserted(el) {
+                el.focus()
+                // console.log('触发')
+            },
+        },
+    },
     data() {
         return {
             hh: 1212,
@@ -38,7 +47,7 @@ export default {
         }
     },
     created() {
-        console.log(this)
+        // console.log(this)
     },
     mounted() {
         // this.userInfo.country = '中国'
@@ -47,7 +56,7 @@ export default {
         setTimeout(() => {
             this.hh = 'jimous cool'
             this.$nextTick(() => {
-                console.log('DOM更新', this.userInfo)
+                // console.log('DOM更新', this.userInfo)
             })
         }, 1000)
     },
