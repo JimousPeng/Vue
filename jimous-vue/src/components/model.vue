@@ -2,13 +2,13 @@
  * @Date: 2022-02-25 10:15:15
  * @LastEditors: jimouspeng
  * @Description: 描述文件内容
- * @LastEditTime: 2022-03-04 17:46:56
+ * @LastEditTime: 2022-03-04 18:12:21
  * @FilePath: \vue\jimous-vue\src\components\model.vue
 -->
 <template>
     <div>
         <!-- {{ name }} -->
-        <!-- <span>{{ hh }}</span> -->
+        <span>{{ hh | useBig }}</span>
         <p>{{ userInfo[0].name || 'coco' }}</p>
         <p v-focus>{{ userInfo[0].country }}</p>
         <input type="text" v-focus />
@@ -33,6 +33,12 @@ export default {
                 el.focus()
                 // console.log('触发')
             },
+        },
+    },
+    /** 注册组件内局部过滤器 */
+    filters: {
+        useBig(val) {
+            return val * 1000
         },
     },
     data() {
@@ -67,6 +73,7 @@ export default {
             Vue.set(this.userInfo, 0, { name: 'jimous02', country: '中国' }) // 数据更新，视图更新
             this.$set(this.userInfo, 0, { name: 'jimous03', country: '中国' }) // 数据更新，视图更新
             console.log(this.country, this)
+            this.writeDom()
         },
     },
 }

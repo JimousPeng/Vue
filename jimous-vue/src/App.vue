@@ -2,7 +2,7 @@
  * @Date: 2022-02-11 10:25:59
  * @LastEditors: jimouspeng
  * @Description: 描述文件内容
- * @LastEditTime: 2022-03-04 17:47:30
+ * @LastEditTime: 2022-03-04 18:03:41
  * @FilePath: \vue\jimous-vue\src\App.vue
 -->
 <template>
@@ -12,6 +12,7 @@
         <show-model />
         <model />
         <div id="toast" @click="eventClick">点我啊</div>
+        <name-cpment user-name="jimous6666" />
     </div>
 </template>
 

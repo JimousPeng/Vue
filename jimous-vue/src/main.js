@@ -2,18 +2,30 @@
  * @Date: 2022-02-11 10:25:59
  * @LastEditors: jimouspeng
  * @Description: 描述文件内容
- * @LastEditTime: 2022-03-04 17:47:05
+ * @LastEditTime: 2022-03-04 18:13:27
  * @FilePath: \vue\jimous-vue\src\main.js
  */
 import Vue from 'vue'
 import App from './App.vue'
 import { toast } from './components/toast.js'
+import NameCpment from './components/nameCpment.vue'
+import { JimousPlugin } from './plugin.js'
+import mixins from './mixins.js'
+// Vue.component('nameCpment', Vue.extend(NameCpment))
+/** 注册组件，传入一个选项对象 (自动调用 Vue.extend) */
+// console.log(NameCpment)
+Vue.component('nameCpment', NameCpment)
 
 // console.log(toast)
 
 import ShowModel from 'jimous-vue-components/lib/show-model/index'
 
 Vue.use(ShowModel)
+
+Vue.use(JimousPlugin, { name: 'jimous9090' })
+
+/** 全局注册一个混入，影响注册之后所有创建的每个 Vue 实例。插件作者可以使用混入，向组件注入自定义的行为。不推荐在应用代码中使用 */
+Vue.mixin(mixins)
 
 Vue.config.productionTip = false
 
@@ -40,6 +52,11 @@ Vue.directive('focus', {
     },
     // 只调用一次，指令与元素解绑时调用
     unbind() {},
+})
+
+/** 注册或获取全局过滤器。 */
+Vue.filter('useBig', (val) => {
+    return val * 10
 })
 
 new Vue({
