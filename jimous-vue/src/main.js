@@ -1,8 +1,8 @@
 /*
  * @Date: 2022-02-11 10:25:59
- * @LastEditors: jimouspeng
+ * @LastEditors: Please set LastEditors
  * @Description: 描述文件内容
- * @LastEditTime: 2022-03-04 18:13:27
+ * @LastEditTime: 2022-03-05 13:52:46
  * @FilePath: \vue\jimous-vue\src\main.js
  */
 import Vue from 'vue'
@@ -10,7 +10,7 @@ import App from './App.vue'
 import { toast } from './components/toast.js'
 import NameCpment from './components/nameCpment.vue'
 import { JimousPlugin } from './plugin.js'
-import mixins from './mixins.js'
+// import mixins from './mixins.js'
 // Vue.component('nameCpment', Vue.extend(NameCpment))
 /** 注册组件，传入一个选项对象 (自动调用 Vue.extend) */
 // console.log(NameCpment)
@@ -25,7 +25,7 @@ Vue.use(ShowModel)
 Vue.use(JimousPlugin, { name: 'jimous9090' })
 
 /** 全局注册一个混入，影响注册之后所有创建的每个 Vue 实例。插件作者可以使用混入，向组件注入自定义的行为。不推荐在应用代码中使用 */
-Vue.mixin(mixins)
+// Vue.mixin(mixins)
 
 Vue.config.productionTip = false
 
