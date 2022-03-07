@@ -2,8 +2,8 @@
  * @Date: 2022-03-02 17:14:09
  * @LastEditors: jimouspeng
  * @Description: Vue源码解读
- * @LastEditTime: 2022-03-07 16:09:45
- * @FilePath: \es6\vue.js
+ * @LastEditTime: 2022-03-07 18:14:11
+ * @FilePath: \vue\vue2_source_code\vue.js
  */
 
 /**
@@ -330,7 +330,9 @@ function initMixin(Vue) {
                         warn(`Getter is missing for computed property "${key}".`, vm)
                     }
                     if (!isSSR) {
+                        /** 这里的watchers也会赋值给vm._computedWatchers */
                         // create internal watcher for the computed property.
+                        const computedWatcherOptions = { lazy: true }
                         watchers[key] = new Watcher(vm, getter || noop, noop, computedWatcherOptions)
                     }
                     // component-defined computed properties are already defined on the
@@ -338,6 +340,57 @@ function initMixin(Vue) {
                     // at instantiation here.
                     if (!(key in vm)) {
                         defineComputed(vm, key, userDef)
+                        function defineComputed(target: any, key: string, userDef: Object | Function) {
+                            const shouldCache = !isServerRendering() // 是否是服务端渲染
+                            if (typeof userDef === 'function') {
+                                sharedPropertyDefinition.get = shouldCache ? createComputedGetter(key) : createGetterInvoker(userDef)
+                                sharedPropertyDefinition.set = noop
+                            } else {
+                                sharedPropertyDefinition.get = userDef.get
+                                    ? shouldCache && userDef.cache !== false
+                                        ? createComputedGetter(key)
+                                        : createGetterInvoker(userDef.get)
+                                    : noop
+                                sharedPropertyDefinition.set = userDef.set || noop
+                            }
+                            if (process.env.NODE_ENV !== 'production' && sharedPropertyDefinition.set === noop) {
+                                sharedPropertyDefinition.set = function () {
+                                    warn(`Computed property "${key}" was assigned to but it has no setter.`, this)
+                                }
+                            }
+                            Object.defineProperty(target, key, sharedPropertyDefinition)
+                        }
+
+                        function createComputedGetter(key) {
+                            return function computedGetter() {
+                                const watcher = this._computedWatchers && this._computedWatchers[key]
+                                if (watcher) {
+                                    /** dirty是缓存标识，初始值 = this.lazy = true
+                                     * 第一次取值的时候，通过watcher.evaluate()取值，同时dirty置为false
+                                     *
+                                     * 当有data值更改，observe的set触发Dep.notify
+                                     * 
+                                     * 计算属性原理和响应式原理都是大同小异的，
+                                     * 同样的是使用数据劫持以及依赖收集，
+                                     * 不同的是计算属性有做缓存优化，只有在依赖属性变化时才会重新求值，其它情况都是直接返回缓存值。
+                                     * 服务端不对计算属性缓存。
+                                     * 计算属性更新的前提需要“渲染Watcher”的配合，因此依赖属性的 subs 中至少会存储两个 Watcher
+                                     */
+                                    if (watcher.dirty) {
+                                        watcher.evaluate()
+                                    }
+                                    if (Dep.target) {
+                                        watcher.depend()
+                                    }
+                                    return watcher.value
+                                }
+                            }
+                        }
+                        function createGetterInvoker(fn) {
+                            return function computedGetter() {
+                                return fn.call(this, this)
+                            }
+                        }
                     } else if (process.env.NODE_ENV !== 'production') {
                         if (key in vm.$data) {
                             warn(`The computed property "${key}" is already defined in data.`, vm)
@@ -467,6 +520,27 @@ function initMixin(Vue) {
                 }
                 // observe data
                 observe(data, true /* asRootData */)
+                function observe(value: any, asRootData: ?boolean): Observer | void {
+                    if (!isObject(value) || value instanceof VNode) {
+                        return
+                    }
+                    let ob: Observer | void
+                    if (hasOwn(value, '__ob__') && value.__ob__ instanceof Observer) {
+                        ob = value.__ob__
+                    } else if (
+                        shouldObserve &&
+                        !isServerRendering() &&
+                        (Array.isArray(value) || isPlainObject(value)) &&
+                        Object.isExtensible(value) &&
+                        !value._isVue
+                    ) {
+                        ob = new Observer(value)
+                    }
+                    if (asRootData && ob) {
+                        ob.vmCount++
+                    }
+                    return ob
+                }
             }
         }
         /**

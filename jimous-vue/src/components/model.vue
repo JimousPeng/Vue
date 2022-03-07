@@ -2,7 +2,7 @@
  * @Date: 2022-02-25 10:15:15
  * @LastEditors: jimouspeng
  * @Description: 描述文件内容
- * @LastEditTime: 2022-03-07 15:48:01
+ * @LastEditTime: 2022-03-07 17:03:18
  * @FilePath: \vue\jimous-vue\src\components\model.vue
 -->
 <template>
@@ -41,6 +41,12 @@ export default {
     computed: {
         showCurrentView() {
             return this.viewList[this.idx]
+        },
+        getNum() {
+            return this.hh + 7
+        },
+        getNum2() {
+            return this.idx + this.hh
         },
     },
     // props 可以是数组或对象，用于接收来自父组件的数据。
@@ -136,8 +142,10 @@ export default {
         // this.userInfo.country = '中国'
         // this.country = '中国'
         this.userInfo[0] = { name: 'jimous01', country: '中国' } // 数据更新，视图不更新
+        console.log(this.$options.computed, this.getNum, '----computed---', this.getNum2, this._computedWatchers)
         setTimeout(() => {
             this.hh = 666
+            console.log(this.$options.computed, this.getNum, '---computed--', this.getNum2, this._computedWatchers)
             this.$nextTick(() => {
                 // console.log('DOM更新', this.userInfo)
             })
@@ -152,7 +160,7 @@ export default {
                 this.$destroy()
                 console.log('销毁后', this)
             }, 4000)
-        }, 1500)
+        }, 10000)
         // console.log(this.$parent, '打印父组件')
         console.log(this.$options.inject, 'mode-----options') // undefined , 因为这个组件没有配置inject
     },

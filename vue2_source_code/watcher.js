@@ -1,3 +1,4 @@
+let uid = 0
 class Watcher {
     vm: Component
     expression: string
