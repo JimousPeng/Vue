@@ -1,8 +1,8 @@
 <!--
  * @Date: 2022-02-25 10:15:15
- * @LastEditors: Please set LastEditors
+ * @LastEditors: jimouspeng
  * @Description: 描述文件内容
- * @LastEditTime: 2022-03-05 17:32:19
+ * @LastEditTime: 2022-03-07 15:48:01
  * @FilePath: \vue\jimous-vue\src\components\model.vue
 -->
 <template>
@@ -30,17 +30,17 @@
     </div>
 </template>
 <script>
-import Vue from 'vue';
-import ModelItem from './model-item.vue';
-import ModelName from './model-name.vue';
-import ModelAge from './model-age.vue';
+import Vue from 'vue'
+import ModelItem from './model-item.vue'
+import ModelName from './model-name.vue'
+import ModelAge from './model-age.vue'
 export default {
     components: {
         ModelItem,
     },
     computed: {
         showCurrentView() {
-            return this.viewList[this.idx];
+            return this.viewList[this.idx]
         },
     },
     // props 可以是数组或对象，用于接收来自父组件的数据。
@@ -58,8 +58,8 @@ export default {
             type: [Number, String],
             required: true,
             validator: (val) => {
-                console.log(val, '看看');
-                return val > 25;
+                console.log(val, '看看')
+                return val > 25
             },
         },
     },
@@ -67,7 +67,7 @@ export default {
     directives: {
         focus: {
             inserted(el) {
-                el.focus();
+                el.focus()
                 // console.log('触发')
             },
         },
@@ -75,14 +75,14 @@ export default {
     /** 注册组件内局部过滤器 */
     filters: {
         useBig(val) {
-            return val * 1000;
+            return val * 1000
         },
     },
     watch: {
         // 注意，不应该使用箭头函数来定义 watcher 函数 (例如 searchQuery: newValue => this.updateAutocomplete(newValue))。
         // 理由是箭头函数绑定了父级作用域的上下文，所以 this 将不会按照期望指向 Vue 实例，this.updateAutocomplete 将是 undefined
         hh: function (val) {
-            console.log(val, 'hh更改', this.userInfo);
+            console.log(val, 'hh更改', this.userInfo)
         },
     },
     data() {
@@ -111,44 +111,56 @@ export default {
                     },
                 },
             ],
-        };
+        }
     },
     beforeCreate() {
-        console.log('beforeCreate--------------model');
+        console.log('beforeCreate--------------model')
     },
     created() {
         // console.log(this)
         // console.log(Vue.version);
-        console.log('created----------model');
+        console.log('created----------model')
         this.$watch('hh', (val, oldval) => {
-            console.log(val, oldval, '监听hh的变化');
-        });
+            console.log(val, oldval, '监听hh的变化')
+        })
         this.$watch('userInfo', (val) => {
-            console.log(val, '监听userInfo的变化');
-        });
+            console.log(val, '监听userInfo的变化')
+        })
     },
     beforeMount() {
-        console.log('beforeMount---------------model');
+        console.log('beforeMount---------------model')
     },
     mounted() {
-        console.log('mounted----------model');
+        console.log('mounted----------model')
         // console.log(this.name, this)
         // this.userInfo.country = '中国'
         // this.country = '中国'
-        this.userInfo[0] = { name: 'jimous01', country: '中国' }; // 数据更新，视图不更新
+        this.userInfo[0] = { name: 'jimous01', country: '中国' } // 数据更新，视图不更新
         setTimeout(() => {
-            this.hh = 666;
+            this.hh = 666
             this.$nextTick(() => {
                 // console.log('DOM更新', this.userInfo)
-            });
-        }, 1500);
-        console.log(this.$parent, '打印父组件');
+            })
+            this.$on('jimous-events', 9999)
+            console.log(this._events)
+            setTimeout(() => {
+                console.log('开始销毁', this._events)
+                /** $destroy: 完全销毁一个实例。清理它与其它实例的连接，解绑它的全部指令及事件监听器, 包括Watcher对象从其所在Dep中释放
+                 * 在大多数场景中你不应该调用这个方法。最好使用 v-if 和 v-for 指令以数据驱动的方式控制子组件的生命周期
+                 * 它并不是用来清除已有页面上的DOM的
+                 */
+                this.$destroy()
+                console.log('销毁后', this)
+            }, 4000)
+        }, 1500)
+        // console.log(this.$parent, '打印父组件')
+        console.log(this.$options.inject, 'mode-----options') // undefined , 因为这个组件没有配置inject
     },
     beforeUpdate() {
-        console.log('beforeupdate--------model');
+        console.log('beforeupdate--------model')
     },
     updated() {
-        console.log('updated---------model');
+        console.log('updated---------model')
     },
     methods: {
         // 注意，不应该使用箭头函数来定义 method 函数 (例如 plus: () => this.a++)。
@@ -156,23 +168,38 @@ export default {
         // clickName: () => {
         //     console.log('点击name', this); // this undefined
         // },
+        /** 点击name区域 */
         clickName() {
-            console.log('点击name', this); // this undefined
-            this.idx = 0;
-            this.viewList[0].props.userName = 'jimous#1';
+            this.idx = 0
+            this.viewList[0].props.userName = 'jimous#1'
+            /** $options: vue原型上的方法，包括parent、propsData,_propKeys之类的 */
+            // console.log(this.$options, '$options console------------')
+            /** _renderProxy： 对this数据的代理 */
+            // console.log(this._renderProxy, '_renderProxy console------------')
+            // console.log(this._self === this, '_self console------------') // true
+            /** $data:  */
+            // console.log(this, this.$data, this.$props, this._props, '$data $props console-----------')
+            // console.log(this._uid, 'uid-----')
+            console.log(this.$props === this._props) // true
         },
+        /** 点击点击按钮 */
         eventClick() {
-            this.idx = 1;
-            this.viewList[1].props.age = '88888888';
-            this.country = '中国';
-            this.userInfo[0] = { name: 'jimous02', country: '中国No1' }; // 数据更新，视图不更新
-            Vue.set(this.userInfo, 0, { name: 'jimous02', country: '中国' }); // 数据更新，视图更新
-            this.$set(this.userInfo, 0, { name: 'jimous03', country: '中国' }); // 数据更新，视图更新
-            console.log(this.country, this);
-            this.writeDom();
-            console.log(this.$el, '打印看看$el');
+            this.idx = 1
+            this.viewList[1].props.age = '88888888'
+            this.country = '中国'
+            this.userInfo[0] = { name: 'jimous02', country: '中国No1' } // 数据更新，视图不更新
+            Vue.set(this.userInfo, 0, { name: 'jimous02', country: '中国' }) // 数据更新，视图更新
+            this.$set(this.userInfo, 0, { name: 'jimous03', country: '中国' }) // 数据更新，视图更新
+            console.log(this.country, this)
+            this.writeDom()
+            console.log(this.$el, '打印看看$el', this)
+            this.$on('jimous-emit', () => {
+                console.log('hhhhh')
+            })
+            this.$on(['jimous-emit'], 666)
+            console.log(this._events, '_events-------')
         },
     },
-};
+}
 </script>
 <style lang="scss" scoped></style>
