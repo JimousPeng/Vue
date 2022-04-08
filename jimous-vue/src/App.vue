@@ -2,7 +2,7 @@
  * @Date: 2022-02-11 10:25:59
  * @LastEditors: Please set LastEditors
  * @Description: 描述文件内容
- * @LastEditTime: 2022-03-05 14:57:34
+ * @LastEditTime: 2022-04-08 16:49:34
  * @FilePath: \vue\jimous-vue\src\App.vue
 -->
 <template>
@@ -13,16 +13,20 @@
         <model name="慕远" age="26" />
         <div id="toast" @click="eventClick">点我啊</div>
         <name-cpment user-name="jimous6666" />
+        <br />
+        <input-module />
     </div>
 </template>
 
 <script>
 // import HelloWorld from './components/HelloWorld.vue'
 import Model from './components/model.vue';
+import InputModule from './components/input-module.vue';
 export default {
     name: 'App',
     components: {
         Model,
+        InputModule,
         // HelloWorld
     },
     provide() {
@@ -65,11 +69,11 @@ export default {
     mounted() {
         console.log('mounted----------APP');
         // console.log(this.name, this)
-        console.time('aa')
+        console.time('aa');
         setTimeout(() => {
-            this.schoolInfo.name = '南昌大学'
-            console.timeEnd('aa')
-        }, 3000)
+            this.schoolInfo.name = '南昌大学';
+            console.timeEnd('aa');
+        }, 3000);
     },
     // 在数据发生改变后，DOM 被更新之前被调用。这里适合在现有 DOM 将要被更新之前访问它，比如移除手动添加的事件监听器
     beforeUpdate() {
