@@ -1,8 +1,8 @@
 const axios = require('axios')
 
 const http = axios.create({
-    baseURL: 'https://127.0.0.1:2760',
-    timeout: 1000,
+    baseURL: 'http://127.0.0.1:2760',
+    timeout: 30 * 1000,
     headers: { 'X-Custom-Header': 'foobar' },
 })
 

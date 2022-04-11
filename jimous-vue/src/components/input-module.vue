@@ -12,6 +12,7 @@
     </div>
 </template>
 <script>
+import { uploadImg } from '@/apis/index.js'
 export default {
     data() {
         return {
@@ -24,6 +25,9 @@ export default {
             console.log(e.target.files, '打印看看file')
             this.imgUrl = URL.createObjectURL(file)
             const blobCtx = new Blob([file], { type: 'image/jpg' })
+            uploadImg({
+                file: file,
+            })
             console.log([blobCtx])
         },
     },
