@@ -9,7 +9,7 @@ const http = axios.create({
 http.interceptors.request.use(
     function (config) {
         // Do something before request is sent
-        console.log('触发了请求拦截')
+        console.log('触发了请求拦截', config.headers)
         return config
     },
     function (error) {
