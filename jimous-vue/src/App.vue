@@ -2,7 +2,7 @@
  * @Date: 2022-02-11 10:25:59
  * @LastEditors: Please set LastEditors
  * @Description: 描述文件内容
- * @LastEditTime: 2022-04-08 16:49:34
+ * @LastEditTime: 2022-04-15 10:38:25
  * @FilePath: \vue\jimous-vue\src\App.vue
 -->
 <template>
@@ -32,6 +32,7 @@ export default {
     provide() {
         return {
             schoolInfo: this.schoolInfo,
+            userInfo: 'hhhh'
         };
     },
     // provide: {
