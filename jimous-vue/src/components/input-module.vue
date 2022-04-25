@@ -60,8 +60,8 @@ export default {
         },
         login() {
             const params = {
-                userId: '2760',
-                name: '天道惑颜',
+                needName: true,
+                // needAge: true,
             };
             getUserInfo(params).then((res) => {
                 console.log(res, 'login');
