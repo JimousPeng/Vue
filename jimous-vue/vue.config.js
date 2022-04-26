@@ -1,8 +1,8 @@
 /*
  * @Date: 2022-03-04 11:29:17
- * @LastEditors: jimouspeng
+ * @LastEditors: Please set LastEditors
  * @Description: vue配置文件
- * @LastEditTime: 2022-03-04 16:31:30
+ * @LastEditTime: 2022-04-26 10:47:29
  * @FilePath: \vue\jimous-vue\vue.config.js
  */
 
@@ -21,6 +21,8 @@
  * @return {*}
  */
 
+const path = require('path');
+
 module.exports = {
     // runtimeCompiler: true,
     configureWebpack: {
@@ -28,7 +30,8 @@ module.exports = {
             alias: {
                 // vue$, 正则，内部为正则表达式  vue结尾的
                 vue$: 'vue/dist/vue.js',
+                '@': path.resolve('./src'),
             },
         },
     },
-}
+};
