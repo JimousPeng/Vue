@@ -1,5 +1,5 @@
-import IndexPage from '../pages/index/index.vue';
-import IndexPoster from '../pages/poster/index.vue';
+const IndexPage = () => import(/* webpackChunkName: "page_index" */ '../pages/index/index.vue')
+const IndexPoster = () => import(/* webpackChunkName: "page_index" */ '../pages/poster/index.vue')
 
 export const routes = [
     {

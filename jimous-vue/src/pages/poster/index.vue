@@ -20,7 +20,12 @@ export default {
         };
     },
     async created() {
-        const imgData = await loaderPoster();
+        const imgData = await loaderPoster().catch((err) => {
+            console.log(err);
+        });
+        if (!imgData) {
+            return;
+        }
         console.log('初始化', imgData);
         /**
          * 这里比较有意思，webpack底层对buffer.from的调用进行了 new Uint8Array的默认创建
