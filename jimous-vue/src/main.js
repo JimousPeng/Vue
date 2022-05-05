@@ -2,7 +2,7 @@
  * @Date: 2022-02-11 10:25:59
  * @LastEditors: Please set LastEditors
  * @Description: 描述文件内容
- * @LastEditTime: 2022-04-26 11:00:30
+ * @LastEditTime: 2022-05-05 15:42:34
  * @FilePath: \vue\jimous-vue\src\main.js
  */
 import Vue from 'vue';
@@ -19,6 +19,15 @@ Vue.use(VueRouter);
 
 const router = new VueRouter({
     routes,
+});
+
+router.beforeEach((to, from, next) => {
+    console.log(to, from, '112');
+    if (to.meta.requireAuth) {
+        router.push({ name: 'error' })
+    } else {
+        next();
+    }
 });
 
 // import mixins from './mixins.js'

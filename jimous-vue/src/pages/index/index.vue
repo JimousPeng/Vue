@@ -7,6 +7,9 @@
 <template>
     <div>
         <div @click="goPoster">前往海报</div>
+        <router-view />
+        <router-link :to="{ name: 'jimous' }">个人页面</router-link>
+        <router-link :to="{ name: 'other' }">别人页面</router-link>
         <img alt="Vue logo" :src="require('@/assets/logo.png')" />
         <!-- <HelloWorld msg="Welcome to Your Vue.js App"/> -->
         <show-model />
