@@ -10,8 +10,17 @@ export default {
         userName: {
             type: String,
             default: 'name----',
+            validator: (val) => {
+                console.log(val, '看看0-0-');
+                return val;
+            },
         },
     },
-}
+    watch: {
+        userName(val) {
+            console.log(val, '触发了');
+        },
+    },
+};
 </script>
 <style lang="scss" scoped></style>

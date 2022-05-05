@@ -1,5 +1,5 @@
 const IndexPage = () => import(/* webpackChunkName: "page_index" */ '../pages/index/index.vue');
-const IndexPoster = () => import(/* webpackChunkName: "page_index" */ '../pages/poster/index.vue');
+const IndexPoster = () => import(/* webpackChunkName: "page_poster" */ '../pages/poster/index.vue');
 const Error = () => import(/* webpackChunkName: "page_error" */ '../pages/error/index.vue');
 const UserInfo = () => import(/* webpackChunkName: "page_user" */ '../pages/index/user-info/index.vue');
 const OtherInfo = () => import(/* webpackChunkName: "page_other" */ '../pages/index/other-info/index.vue');
@@ -19,12 +19,12 @@ export const routes = [
         ],
     },
     {
-        path: '/poster',
+        path: '/poster/:id',
         name: 'poster',
         component: IndexPoster,
-        meta: {
-            requireAuth: true,
-        },
+        // meta: {
+        //     requireAuth: true,
+        // },
     },
     {
         path: '/404',

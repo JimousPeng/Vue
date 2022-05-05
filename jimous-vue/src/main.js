@@ -2,7 +2,7 @@
  * @Date: 2022-02-11 10:25:59
  * @LastEditors: Please set LastEditors
  * @Description: 描述文件内容
- * @LastEditTime: 2022-05-05 15:42:34
+ * @LastEditTime: 2022-05-05 16:35:10
  * @FilePath: \vue\jimous-vue\src\main.js
  */
 import Vue from 'vue';
@@ -19,12 +19,16 @@ Vue.use(VueRouter);
 
 const router = new VueRouter({
     routes,
+    // scrollBehavior() {
+    //     // return 期望滚动到哪个的位置
+    //     return { x: 0, y: 0 };
+    // },
 });
 
 router.beforeEach((to, from, next) => {
     console.log(to, from, '112');
     if (to.meta.requireAuth) {
-        router.push({ name: 'error' })
+        router.push({ name: 'error' });
     } else {
         next();
     }

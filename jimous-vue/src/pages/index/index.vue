@@ -8,6 +8,8 @@
     <div>
         <div @click="goPoster">前往海报</div>
         <router-view />
+        <!-- <router-view name="jimous" />
+        <router-view name="other" /> -->
         <router-link :to="{ name: 'jimous' }">个人页面</router-link>
         <router-link :to="{ name: 'other' }">别人页面</router-link>
         <img alt="Vue logo" :src="require('@/assets/logo.png')" />
@@ -97,7 +99,7 @@ export default {
             });
         },
         goPoster() {
-            this.$router.push('poster');
+            this.$router.push({ name: 'poster', params: { id: 123 } });
         },
     },
 };
