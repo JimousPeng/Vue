@@ -2,10 +2,12 @@
  * @Date: 2022-02-11 10:25:59
  * @LastEditors: Please set LastEditors
  * @Description: 描述文件内容
- * @LastEditTime: 2022-05-05 16:35:10
+ * @LastEditTime: 2022-05-06 10:39:48
  * @FilePath: \vue\jimous-vue\src\main.js
  */
 import Vue from 'vue';
+/** 将vue-router文件放到本地方便调试 */
+// import VueRouter from '@/utils/vue-router.common.js';
 import VueRouter from 'vue-router';
 import App from './App.vue';
 import { toast } from './components/toast.js';
@@ -24,6 +26,8 @@ const router = new VueRouter({
     //     return { x: 0, y: 0 };
     // },
 });
+
+console.log('开始应用');
 
 router.beforeEach((to, from, next) => {
     console.log(to, from, '112');
