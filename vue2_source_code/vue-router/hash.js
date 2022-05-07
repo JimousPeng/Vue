@@ -4,7 +4,26 @@
 class History {
     constructor(router: Router, base: ?string) {
         this.router = router;
-        this.base = normalizeBase(base);
+        this.base = normalizeBase(base); // this.base在new VueRouter没传的时候，浏览器环境这里为''
+        function normalizeBase(base: ?string): string {
+            if (!base) {
+                if (inBrowser) {
+                    // respect <base> tag
+                    const baseEl = document.querySelector('base');
+                    base = (baseEl && baseEl.getAttribute('href')) || '/';
+                    // strip full URL origin
+                    base = base.replace(/^https?:\/\/[^\/]+/, '');
+                } else {
+                    base = '/';
+                }
+            }
+            // make sure there's the starting slash
+            if (base.charAt(0) !== '/') {
+                base = '/' + base;
+            }
+            // remove trailing slash
+            return base.replace(/\/$/, '');
+        }
         // start with a route object that stands for "nowhere"
         this.current = START;
         this.pending = null;
@@ -216,7 +235,6 @@ class HashHistory extends History {
         }
         ensureSlash();
     }
-
     // this is delayed until the app mounts
     // to avoid the hashchange listener being fired too early
     setupListeners() {
@@ -293,4 +311,30 @@ class HashHistory extends History {
     getCurrentLocation() {
         return getHash();
     }
+}
+
+/** vue-router\src\util\route.js */
+var START = createRoute(null, {
+    path: '/',
+});
+function createRoute(record: ?RouteRecord, location: Location, redirectedFrom?: ?Location, router?: VueRouter): Route {
+    const stringifyQuery = router && router.options.stringifyQuery;
+    let query: any = location.query || {};
+    try {
+        query = clone(query);
+    } catch (e) {}
+    const route: Route = {
+        name: location.name || (record && record.name),
+        meta: (record && record.meta) || {},
+        path: location.path || '/',
+        hash: location.hash || '',
+        query,
+        params: location.params || {},
+        fullPath: getFullPath(location, stringifyQuery),
+        matched: record ? formatMatch(record) : [],
+    };
+    if (redirectedFrom) {
+        route.redirectedFrom = getFullPath(redirectedFrom, stringifyQuery);
+    }
+    return Object.freeze(route);
 }
