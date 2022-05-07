@@ -7,19 +7,26 @@
 
 <template>
     <div>
-        jimous：<br />
+        jimous：{{ id }}<br />
         <img v-if="imgUrl" class="poster-img" :src="imgUrl" @error="imgLoadError" alt="" />
     </div>
 </template>
 <script>
 import { loaderPoster } from '@/apis/index.js';
 export default {
+    props: {
+        id: {
+            type: [String, Number],
+            default: '',
+        },
+    },
     data() {
         return {
             imgUrl: '',
         };
     },
     async created() {
+        console.log('poster-id', this.id);
         const imgData = await loaderPoster().catch((err) => {
             console.log(err);
         });

@@ -25,6 +25,7 @@ export const routes = [
         // meta: {
         //     requireAuth: true,
         // },
+        props: true, // 利用props解耦,route.params 将会被设置为组件属性
     },
     {
         path: '/404',
