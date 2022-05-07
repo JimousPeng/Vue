@@ -99,8 +99,8 @@ export default {
             });
         },
         goPoster() {
-            this.$router.push({ name: 'poster', params: { id: 123 } }, () => {
-                console.log('路由成功跳转')
+            this.$router.push({ name: 'poster', params: { id: 123 } }, (route) => {
+                console.log('路由成功跳转', route)
             });
         },
     },

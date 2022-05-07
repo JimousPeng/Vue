@@ -4,7 +4,8 @@
 class History {
     constructor(router: Router, base: ?string) {
         this.router = router;
-        this.base = normalizeBase(base); // this.base在new VueRouter没传的时候，浏览器环境这里为''
+        // this.base在new VueRouter没传的时候，浏览器环境这里为''
+        this.base = normalizeBase(base);
         function normalizeBase(base: ?string): string {
             if (!base) {
                 if (inBrowser) {
@@ -53,6 +54,7 @@ class History {
         let route;
         // catch redirect option https://github.com/vuejs/vue-router/issues/3201
         try {
+            /** this.router指向vue-router实例 */
             route = this.router.match(location, this.current);
         } catch (e) {
             this.errorCbs.forEach((cb) => {
@@ -134,9 +136,21 @@ class History {
             }
             return abort(createNavigationDuplicatedError(current, route));
         }
-
+        function resolveQueue(current, next) {
+            let i;
+            const max = Math.max(current.length, next.length);
+            for (i = 0; i < max; i++) {
+                if (current[i] !== next[i]) {
+                    break;
+                }
+            }
+            return {
+                updated: next.slice(0, i),
+                activated: next.slice(i),
+                deactivated: current.slice(i),
+            };
+        }
         const { updated, deactivated, activated } = resolveQueue(this.current.matched, route.matched);
-
         const queue: Array<?NavigationGuard> = [].concat(
             // in-component leave guards
             extractLeaveGuards(deactivated),
@@ -149,7 +163,6 @@ class History {
             // async components
             resolveAsyncComponents(activated)
         );
-
         const iterator = (hook: NavigationGuard, next) => {
             if (this.pending !== route) {
                 return abort(createNavigationCancelledError(current, route));
@@ -183,7 +196,6 @@ class History {
                 abort(e);
             }
         };
-
         runQueue(queue, iterator, () => {
             // wait until async components are resolved before
             // extracting in-component enter guards
@@ -225,7 +237,93 @@ class History {
     }
 }
 
-/** vue-router\src\history\hash.js */
+/** 
+ * vue-router\src\history\hash.js */
+function ensureSlash() {
+    const path = getHash();
+    if (path.charAt(0) === '/') {
+        return true;
+    }
+    /** 走hash模式 */
+    replaceHash('/' + path);
+    return false;
+}
+/**
+ * supportsPushState
+ * pushState
+ * replaceState
+ *
+ * vue-router\src\util\push-state.js
+ */
+var supportsPushState =
+    inBrowser &&
+    (function () {
+        const ua = window.navigator.userAgent;
+        if (
+            (ua.indexOf('Android 2.') !== -1 || ua.indexOf('Android 4.0') !== -1) &&
+            ua.indexOf('Mobile Safari') !== -1 &&
+            ua.indexOf('Chrome') === -1 &&
+            ua.indexOf('Windows Phone') === -1
+        ) {
+            return false;
+        }
+        return window.history && typeof window.history.pushState === 'function';
+    })();
+function pushState(url?: string, replace?: boolean) {
+    saveScrollPosition();
+    // try...catch the pushState call to get around Safari
+    // DOM Exception 18 where it limits to 100 pushState calls
+    const history = window.history;
+    try {
+        if (replace) {
+            // preserve existing history state as it could be overriden by the user
+            const stateCopy = extend({}, history.state);
+            stateCopy.key = getStateKey();
+            history.replaceState(stateCopy, '', url);
+        } else {
+            history.pushState({ key: setStateKey(genStateKey()) }, '', url);
+        }
+    } catch (e) {
+        window.location[replace ? 'replace' : 'assign'](url);
+    }
+}
+function replaceState(url?: string) {
+    pushState(url, true);
+}
+function replaceHash(path) {
+    if (supportsPushState) {
+        /** history模式 */
+        replaceState(getUrl(path));
+    } else {
+        window.location.replace(getUrl(path));
+    }
+}
+function getUrl(path) {
+    const href = window.location.href;
+    const i = href.indexOf('#');
+    const base = i >= 0 ? href.slice(0, i) : href;
+    return `${base}#${path}`;
+}
+/** getHash: 获取当前hash值
+ * eg: 'http://localhost:8080/#/index'.slice(23) -> '/index'
+ */
+function getHash() {
+    // We can't use window.location.hash here because it's not
+    // consistent across browsers - Firefox will pre-decode it!
+    let href = window.location.href;
+    const index = href.indexOf('#');
+    // empty path
+    if (index < 0) return '';
+    href = href.slice(index + 1);
+    return href;
+}
+function pushHash(path) {
+    if (supportsPushState) {
+        pushState(getUrl(path));
+    } else {
+        window.location.hash = path;
+    }
+}
 class HashHistory extends History {
     constructor(router: Router, base: ?string, fallback: boolean) {
         super(router, base);
@@ -241,11 +339,9 @@ class HashHistory extends History {
         if (this.listeners.length > 0) {
             return;
         }
-
         const router = this.router;
         const expectScroll = router.options.scrollBehavior;
         const supportsScroll = supportsPushState && expectScroll;
-
         if (supportsScroll) {
             this.listeners.push(setupScroll());
         }
@@ -270,7 +366,6 @@ class HashHistory extends History {
             window.removeEventListener(eventType, handleRoutingEvent);
         });
     }
-
     push(location: RawLocation, onComplete?: Function, onAbort?: Function) {
         const { current: fromRoute } = this;
         this.transitionTo(
@@ -283,7 +378,6 @@ class HashHistory extends History {
             onAbort
         );
     }
-
     replace(location: RawLocation, onComplete?: Function, onAbort?: Function) {
         const { current: fromRoute } = this;
         this.transitionTo(
@@ -296,18 +390,15 @@ class HashHistory extends History {
             onAbort
         );
     }
-
     go(n: number) {
         window.history.go(n);
     }
-
     ensureURL(push?: boolean) {
         const current = this.current.fullPath;
         if (getHash() !== current) {
             push ? pushHash(current) : replaceHash(current);
         }
     }
-
     getCurrentLocation() {
         return getHash();
     }
@@ -337,4 +428,39 @@ function createRoute(record: ?RouteRecord, location: Location, redirectedFrom?: 
         route.redirectedFrom = getFullPath(redirectedFrom, stringifyQuery);
     }
     return Object.freeze(route);
+}
+function isSameRoute(a: Route, b: ?Route, onlyPath: ?boolean): boolean {
+    if (b === START) {
+        return a === b;
+    } else if (!b) {
+        return false;
+    } else if (a.path && b.path) {
+        return (
+            a.path.replace(trailingSlashRE, '') === b.path.replace(trailingSlashRE, '') &&
+            (onlyPath || (a.hash === b.hash && isObjectEqual(a.query, b.query)))
+        );
+    } else if (a.name && b.name) {
+        return (
+            a.name === b.name &&
+            (onlyPath || (a.hash === b.hash && isObjectEqual(a.query, b.query) && isObjectEqual(a.params, b.params)))
+        );
+    } else {
+        return false;
+    }
+}
+function runQueue(queue: Array<?NavigationGuard>, fn: Function, cb: Function) {
+    const step = (index) => {
+        if (index >= queue.length) {
+            cb();
+        } else {
+            if (queue[index]) {
+                fn(queue[index], () => {
+                    step(index + 1);
+                });
+            } else {
+                step(index + 1);
+            }
+        }
+    };
+    step(0);
 }

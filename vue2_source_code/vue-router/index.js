@@ -61,10 +61,218 @@ class VueRouter {
                 }
         }
     }
+    match(raw: RawLocation, current?: Route, redirectedFrom?: Location): Route {
+        /** 调用路由匹配器的match */
+        return this.matcher.match(raw, current, redirectedFrom);
+    }
+    get currentRoute(): ?Route {
+        return this.history && this.history.current;
+    }
+    init(app: any /* Vue component instance */) {
+        process.env.NODE_ENV !== 'production' &&
+            assert(
+                install.installed,
+                `not installed. Make sure to call \`Vue.use(VueRouter)\` ` + `before creating root instance.`
+            );
+
+        this.apps.push(app);
+        // set up app destroyed handler
+        // https://github.com/vuejs/vue-router/issues/2639
+        app.$once('hook:destroyed', () => {
+            // clean out app from this.apps array once destroyed
+            const index = this.apps.indexOf(app);
+            if (index > -1) this.apps.splice(index, 1);
+            // ensure we still have a main app or null if no apps
+            // we do not release the router so it can be reused
+            if (this.app === app) this.app = this.apps[0] || null;
+
+            if (!this.app) this.history.teardown();
+        });
+
+        // main app previously initialized
+        // return as we don't need to set up new history listener
+        if (this.app) {
+            return;
+        }
+        this.app = app;
+        const history = this.history;
+        if (history instanceof HTML5History || history instanceof HashHistory) {
+            const handleInitialScroll = (routeOrError) => {
+                const from = history.current;
+                const expectScroll = this.options.scrollBehavior;
+                const supportsScroll = supportsPushState && expectScroll;
+
+                if (supportsScroll && 'fullPath' in routeOrError) {
+                    handleScroll(this, routeOrError, from, false);
+                }
+            };
+            const setupListeners = (routeOrError) => {
+                history.setupListeners();
+                handleInitialScroll(routeOrError);
+            };
+            history.transitionTo(history.getCurrentLocation(), setupListeners, setupListeners);
+        }
+        history.listen((route) => {
+            this.apps.forEach((app) => {
+                app._route = route;
+            });
+        });
+    }
+    beforeEach(fn: Function): Function {
+        return registerHook(this.beforeHooks, fn);
+    }
+    beforeResolve(fn: Function): Function {
+        return registerHook(this.resolveHooks, fn);
+    }
+    afterEach(fn: Function): Function {
+        return registerHook(this.afterHooks, fn);
+    }
+    onReady(cb: Function, errorCb?: Function) {
+        this.history.onReady(cb, errorCb);
+    }
+    onError(errorCb: Function) {
+        this.history.onError(errorCb);
+    }
+    /** 调用route.push实际是调用history.push */
+    push(location: RawLocation, onComplete?: Function, onAbort?: Function) {
+        // $flow-disable-line
+        if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
+            return new Promise((resolve, reject) => {
+                this.history.push(location, resolve, reject);
+            });
+        } else {
+            this.history.push(location, onComplete, onAbort);
+        }
+    }
+    replace(location: RawLocation, onComplete?: Function, onAbort?: Function) {
+        // $flow-disable-line
+        if (!onComplete && !onAbort && typeof Promise !== 'undefined') {
+            return new Promise((resolve, reject) => {
+                this.history.replace(location, resolve, reject);
+            });
+        } else {
+            this.history.replace(location, onComplete, onAbort);
+        }
+    }
+    go(n: number) {
+        this.history.go(n);
+    }
+    back() {
+        this.go(-1);
+    }
+    forward() {
+        this.go(1);
+    }
+    getMatchedComponents(to?: RawLocation | Route): Array<any> {
+        const route: any = to ? (to.matched ? to : this.resolve(to).route) : this.currentRoute;
+        if (!route) {
+            return [];
+        }
+        return [].concat.apply(
+            [],
+            route.matched.map((m) => {
+                return Object.keys(m.components).map((key) => {
+                    return m.components[key];
+                });
+            })
+        );
+    }
+    resolve(
+        to: RawLocation,
+        current?: Route,
+        append?: boolean
+    ): {
+        location: Location,
+        route: Route,
+        href: string,
+        // for backwards compat
+        normalizedTo: Location,
+        resolved: Route,
+    } {
+        current = current || this.history.current;
+        const location = normalizeLocation(to, current, append, this);
+        const route = this.match(location, current);
+        const fullPath = route.redirectedFrom || route.fullPath;
+        const base = this.history.base;
+        const href = createHref(base, fullPath, this.mode);
+        return {
+            location,
+            route,
+            href,
+            // for backwards compat
+            normalizedTo: location,
+            resolved: route,
+        };
+    }
+    getRoutes() {
+        return this.matcher.getRoutes();
+    }
+    addRoute(parentOrRoute: string | RouteConfig, route?: RouteConfig) {
+        this.matcher.addRoute(parentOrRoute, route);
+        if (this.history.current !== START) {
+            this.history.transitionTo(this.history.getCurrentLocation());
+        }
+    }
+    addRoutes(routes: Array<RouteConfig>) {
+        if (process.env.NODE_ENV !== 'production') {
+            warn(
+                false,
+                'router.addRoutes() is deprecated and has been removed in Vue Router 4. Use router.addRoute() instead.'
+            );
+        }
+        this.matcher.addRoutes(routes);
+        if (this.history.current !== START) {
+            this.history.transitionTo(this.history.getCurrentLocation());
+        }
+    }
+}
+
+VueRouter.install = install;
+/** install
+ * 
+ * @param {*} Vue 
+ * @returns 
+ * 
+ * vue-router\src\install.js
+ */
+function install (Vue) {
+    if (install.installed && _Vue === Vue) return
+    install.installed = true  
+    _Vue = Vue  
+    const isDef = v => v !== undefined  
+    const registerInstance = (vm, callVal) => {
+      let i = vm.$options._parentVnode
+      if (isDef(i) && isDef(i = i.data) && isDef(i = i.registerRouteInstance)) {
+        i(vm, callVal)
+      }
+    }  
+    Vue.mixin({
+      beforeCreate () {
+        if (isDef(this.$options.router)) {
+          this._routerRoot = this
+          this._router = this.$options.router
+          this._router.init(this)
+          Vue.util.defineReactive(this, '_route', this._router.history.current)
+        } else {
+          this._routerRoot = (this.$parent && this.$parent._routerRoot) || this
+        }
+        registerInstance(this, this)
+      },
+      destroyed () {
+        registerInstance(this)
+      }
+    })
+VueRouter.version = '__VERSION__';
+VueRouter.isNavigationFailure = isNavigationFailure;
+VueRouter.NavigationFailureType = NavigationFailureType;
+VueRouter.START_LOCATION = START;
+
+if (inBrowser && window.Vue) {
+    window.Vue.use(VueRouter);
 }
 
 /** createMatcher -> 生成路由匹配器
- * 
+ *
  * vue-router\src\create-matcher.js
  */
 function createMatcher(routes, router) {
@@ -95,6 +303,7 @@ function createMatcher(routes, router) {
     function match(raw: RawLocation, currentRoute?: Route, redirectedFrom?: Location): Route {
         const location = normalizeLocation(raw, currentRoute, false, router);
         const { name } = location;
+        /** 走name跳转 */
         if (name) {
             const record = nameMap[name];
             if (process.env.NODE_ENV !== 'production') {
@@ -106,7 +315,6 @@ function createMatcher(routes, router) {
             if (typeof location.params !== 'object') {
                 location.params = {};
             }
-
             if (currentRoute && typeof currentRoute.params === 'object') {
                 for (const key in currentRoute.params) {
                     if (!(key in location.params) && paramNames.indexOf(key) > -1) {
@@ -114,14 +322,30 @@ function createMatcher(routes, router) {
                     }
                 }
             }
-
             location.path = fillParams(record.path, location.params, `named route "${name}"`);
             return _createRoute(record, location, redirectedFrom);
         } else if (location.path) {
+            /** 走path跳转 */
             location.params = {};
             for (let i = 0; i < pathList.length; i++) {
                 const path = pathList[i];
                 const record = pathMap[path];
+                function matchRoute(regex: RouteRegExp, path: string, params: Object): boolean {
+                    const m = path.match(regex);
+                    if (!m) {
+                        return false;
+                    } else if (!params) {
+                        return true;
+                    }
+                    for (let i = 1, len = m.length; i < len; ++i) {
+                        const key = regex.keys[i - 1];
+                        if (key) {
+                            // Fix #1994: using * with props: true generates a param named 0
+                            params[key.name || 'pathMatch'] = typeof m[i] === 'string' ? decode(m[i]) : m[i];
+                        }
+                    }
+                    return true;
+                }
                 if (matchRoute(record.regex, location.path, location.params)) {
                     return _createRoute(record, location, redirectedFrom);
                 }
@@ -147,14 +371,12 @@ function createMatcher(routes, router) {
             }
             return _createRoute(null, location);
         }
-
         const re: Object = redirect;
         const { name, path } = re;
         let { query, hash, params } = location;
         query = re.hasOwnProperty('query') ? re.query : query;
         hash = re.hasOwnProperty('hash') ? re.hash : hash;
         params = re.hasOwnProperty('params') ? re.params : params;
-
         if (name) {
             // resolved named direct
             const targetRecord = nameMap[name];
@@ -229,7 +451,7 @@ function createMatcher(routes, router) {
  * pathList： 路由数组列表 Array
  * pathMap：路由path-map  Object
  * nameMap：路由name-map  Object
- * 
+ *
  * vue-router\src\create-route-map.js
  */
 function createRouteMap(routes) {
@@ -375,4 +597,39 @@ function createRouteMap(routes) {
         pathMap,
         nameMap,
     };
+}
+
+/**
+ * createRoute | formatMatch
+ *
+ * vue-router\src\util\route.js
+ */
+function createRoute(record: ?RouteRecord, location: Location, redirectedFrom?: ?Location, router?: VueRouter): Route {
+    const stringifyQuery = router && router.options.stringifyQuery;
+    let query: any = location.query || {};
+    try {
+        query = clone(query);
+    } catch (e) {}
+    const route = {
+        name: location.name || (record && record.name),
+        meta: (record && record.meta) || {},
+        path: location.path || '/',
+        hash: location.hash || '',
+        query,
+        params: location.params || {},
+        fullPath: getFullPath(location, stringifyQuery),
+        matched: record ? formatMatch(record) : [],
+    };
+    if (redirectedFrom) {
+        route.redirectedFrom = getFullPath(redirectedFrom, stringifyQuery);
+    }
+    return Object.freeze(route);
+}
+function formatMatch(record) {
+    const res = [];
+    while (record) {
+        res.unshift(record);
+        record = record.parent;
+    }
+    return res;
 }
