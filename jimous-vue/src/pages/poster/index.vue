@@ -25,8 +25,16 @@ export default {
             imgUrl: '',
         };
     },
+    watch: {
+        '$route.params.id': {
+            handler(val) {
+                console.log(val, '监听￥router');
+            },
+            immediate: true,
+        },
+    },
     async created() {
-        console.log('poster-id', this.id);
+        console.log('poster-id', this.id, this.$route);
         const imgData = await loaderPoster().catch((err) => {
             console.log(err);
         });
