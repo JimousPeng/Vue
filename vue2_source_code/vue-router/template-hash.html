@@ -7,13 +7,21 @@
         <title>Document</title>
     </head>
     <body>
+        路由处理
         <script>
             window.addEventListener('popstate', (e) => {
-                console.log(e, 'popstate');
+                console.log(e, 'popstate触发');
             });
             setTimeout(() => {
-                console.log(window.location)
-            }, 2000)
+                history.pushState({ page: new Date().getTime() }, '', window.location.href + '#/index');
+                console.log(window.location.href);
+                // location.hash = location.hash + '#/index';
+                setTimeout(() => {
+                    history.pushState({ page: new Date().getTime() }, '', window.location.href + '/userinfo');
+                    // location.hash = location.hash + '/userinfo';
+                    console.log(window.location.href);
+                }, 2000);
+            }, 2000);
         </script>
     </body>
 </html>

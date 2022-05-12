@@ -7,13 +7,19 @@
 
 <template>
     <div>
+        <show-poster :level="1">这里是h5</show-poster>
+        <slot />
         jimous：{{ id }}<br />
         <img v-if="imgUrl" class="poster-img" :src="imgUrl" @error="imgLoadError" alt="" />
     </div>
 </template>
 <script>
 import { loaderPoster } from '@/apis/index.js';
+import ShowPoster from './components/show-poster/index.vue';
 export default {
+    components: {
+        ShowPoster,
+    },
     props: {
         id: {
             type: [String, Number],

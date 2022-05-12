@@ -7,6 +7,7 @@
 <template>
     <div>
         <div @click="goPoster">前往海报</div>
+        <slot />
         <router-view />
         <!-- <router-view name="jimous" />
         <router-view name="other" /> -->
