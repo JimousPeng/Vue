@@ -1,17 +1,64 @@
 <!DOCTYPE html>
 <html lang="">
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1.0">
-    <link rel="icon" href="<%= BASE_URL %>favicon.ico">
-    <title><%= htmlWebpackPlugin.options.title %></title>
-  </head>
-  <body>
-    <noscript>
-      <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
-    </noscript>
-    <div id="app"></div>
-    <!-- built files will be auto injected -->
-  </body>
+    <head>
+        <meta charset="utf-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width,initial-scale=1.0" />
+        <link rel="icon" href="<%= BASE_URL %>favicon.ico" />
+        <title><%= htmlWebpackPlugin.options.title %></title>
+    </head>
+    <body>
+        <noscript>
+            <strong
+                >We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript
+                enabled. Please enable it to continue.</strong
+            >
+        </noscript>
+        <div id="app"></div>
+        <script>
+            console.log('读取模板');
+            /** rem适配 */
+            var htmlDom = document.documentElement;
+            var windowWidth = htmlDom.clientWidth;
+
+            var proportion = 7.5;
+            if (windowWidth >= 480) {
+                windowWidth = 480;
+            }
+
+            var evt = 'onorientationchange' in window ? 'orientationchange' : 'resize';
+            htmlDom.style.fontSize = windowWidth / proportion + 'px';
+            (function () {
+                document.addEventListener(
+                    'DOMContentLoaded',
+                    function () {
+                        if (!htmlDom.style.fontSize) {
+                            var htmlDomProtect = document.documentElement;
+                            var windowWidth = htmlDomProtect.clientWidth;
+                            if (windowWidth >= 480) {
+                                windowWidth = 480;
+                            }
+                            htmlDomProtect.style.fontSize = windowWidth / proportion + 'px';
+                        }
+                    },
+                    false
+                );
+            })();
+            window.addEventListener(
+                evt,
+                function () {
+                    setTimeout(function () {
+                        var htmlDomProtect = document.documentElement;
+                        var windowWidth = htmlDomProtect.clientWidth;
+                        if (windowWidth >= 480) {
+                            windowWidth = 480;
+                        }
+                        htmlDomProtect.style.fontSize = windowWidth / proportion + 'px';
+                    }, 200);
+                },
+                false
+            );
+        </script>
+        <!-- built files will be auto injected -->
+    </body>
 </html>

@@ -6,7 +6,7 @@
 -->
 <template>
     <div>
-        <div @click="goPoster">前往海报</div>
+        <div @click="goPoster" class="post-enter">前往海报</div>
         <slot />
         <router-view />
         <!-- <router-view name="jimous" />
@@ -101,14 +101,14 @@ export default {
         },
         goPoster() {
             this.$router.push({ name: 'poster', params: { id: 123 } }, (route) => {
-                console.log('路由成功跳转', route)
+                console.log('路由成功跳转', route);
             });
         },
     },
 };
 </script>
 
-<style>
+<style lang="scss" scoped>
 #app {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
@@ -116,5 +116,8 @@ export default {
     text-align: center;
     color: #2c3e50;
     margin-top: 60px;
+    .post-enter {
+        font-size: 0.36rem;
+    }
 }
 </style>
