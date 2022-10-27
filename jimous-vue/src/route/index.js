@@ -28,6 +28,11 @@ export const routes = [
         props: true, // 利用props解耦,route.params 将会被设置为组件属性
     },
     {
+        path: '/card-show',
+        name: 'cardShow',
+        component: () => import('@/pages/card/index.vue'),
+    },
+    {
         path: '/404',
         name: 'error',
         component: Error,

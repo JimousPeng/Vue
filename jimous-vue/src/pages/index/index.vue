@@ -5,8 +5,9 @@
  * @FilePath: \vue\jimous-vue\src\pages\index\index.vue
 -->
 <template>
-    <div>
+    <div class="page-module">
         <div @click="goPoster" class="post-enter">前往海报</div>
+        <div @click="goCard" class="card-enter">前往卡片</div>
         <slot />
         <router-view />
         <!-- <router-view name="jimous" />
@@ -77,7 +78,7 @@ export default {
         // console.log(this.name, this)
         console.time('aa');
         setTimeout(() => {
-            this.schoolInfo.name = '南昌大学';
+            this.schoolInfo.name = 'NCU';
             console.timeEnd('aa');
         }, 3000);
     },
@@ -104,12 +105,15 @@ export default {
                 console.log('路由成功跳转', route);
             });
         },
+        goCard() {
+            this.$router.push({ name: 'cardShow' });
+        },
     },
 };
 </script>
 
 <style lang="scss" scoped>
-#app {
+.page-module {
     font-family: Avenir, Helvetica, Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -118,6 +122,12 @@ export default {
     margin-top: 60px;
     .post-enter {
         font-size: 0.36rem;
+    }
+    .card-enter {
+        width: 100vw;
+        height: 1.2rem;
+        font-size: 0.24rem;
+        line-height: 1.2rem;
     }
 }
 </style>
